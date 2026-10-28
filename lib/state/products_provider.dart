@@ -1,8 +1,8 @@
 import 'package:flutter/material.dart';
 
-import '../models/category.dart';
-import '../models/product.dart';
-import '../repositories/product_repository.dart';
+import '../data/models/category.dart';
+import '../data/models/product.dart';
+import '../data/repositories/product_repository.dart';
 
 class ProductsProvider extends ChangeNotifier {
   final ProductRepository _repository;
@@ -27,7 +27,7 @@ class ProductsProvider extends ChangeNotifier {
     notifyListeners();
 
     try {
-      _products = await _repository.getProducts();
+      _products = _repository.getProducts();
     } finally {
       _isLoading = false;
       notifyListeners();
@@ -39,7 +39,7 @@ class ProductsProvider extends ChangeNotifier {
     notifyListeners();
 
     try {
-      _categories = await _repository.getCategories();
+      _categories = _repository.getCategories();
     } finally {
       _categoriesLoading = false;
       notifyListeners();
