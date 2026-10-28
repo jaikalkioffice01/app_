@@ -1,15 +1,14 @@
 import 'package:flutter/material.dart';
 import 'package:provider/provider.dart';
 
-import '../state/cart_provider.dart';
-import '../state/wishlist_provider.dart';
-import '../ui/cart/cart_screen.dart';
-import '../ui/category/category_screen.dart';
-import '../ui/home/home_screen.dart';
-import '../ui/profile/profile_screen.dart';
-import '../ui/wishlist/wishlist_screen.dart';
+import '../../state/cart_provider.dart';
+import '../../state/wishlist_provider.dart';
+import '../cart/cart_screen.dart';
+import '../category/category_screen.dart';
+import '../home/home_screen.dart';
+import '../profile/profile_screen.dart';
+import '../wishlist/wishlist_screen.dart';
 
-/// Global key so pushed routes (like ProductDetailScreen) can switch tabs.
 final mainShellKey = GlobalKey<MainShellState>();
 
 class MainShell extends StatefulWidget {
@@ -22,12 +21,12 @@ class MainShell extends StatefulWidget {
 class MainShellState extends State<MainShell> {
   int _selectedIndex = 0;
 
-  late final List<Widget> _pages = const [
-    HomeScreen(),
-    CategoryScreen(),
-    CartScreen(),
-    WishlistScreen(),
-    ProfileScreen(),
+  late final List<Widget> _pages = [
+    const HomeScreen(),
+    const CategoryScreen(),
+    const CartScreen(),
+    const WishlistScreen(),
+    const ProfileScreen(),
   ];
 
   void selectTab(int index) {
