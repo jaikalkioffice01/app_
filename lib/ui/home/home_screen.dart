@@ -6,6 +6,7 @@ import '../../state/cart_provider.dart';
 import '../../state/products_provider.dart';
 import '../../state/wishlist_provider.dart';
 import '../product/product_detail_screen.dart';
+import '../shell/main_shell.dart';
 
 class HomeScreen extends StatelessWidget {
   const HomeScreen({super.key});
@@ -29,40 +30,35 @@ class HomeScreen extends StatelessWidget {
             ),
             tooltip: 'Cart',
             onPressed: () {
-              // TODO: navigate to cart tab
+              mainShellKey.currentState?.selectTab(2);
             },
           ),
         ],
       ),
-      body: products.isEmpty
-          ? _EmptyState(theme: theme)
-          : RefreshIndicator(
-        onRefresh: () async {
-          // TODO: provider.refresh()
-        },
-        child: GridView.builder(
-          padding: const EdgeInsets.all(16),
-          gridDelegate:
-          const SliverGridDelegateWithMaxCrossAxisExtent(
-            maxCrossAxisExtent: 220,
-            mainAxisSpacing: 16,
-            crossAxisSpacing: 16,
-            childAspectRatio: 0.62,
-          ),
-          itemCount: products.length,
-          itemBuilder: (context, index) {
-            final product = products[index];
-            return _ProductCard(product: product);
-          },
-        ),
-      ),
+      body: provider.isLoading
+          ? const Center(child: CircularProgressIndicator())
+          : products.isEmpty
+              ? _EmptyState(theme: theme)
+              : RefreshIndicator(
+                  onRefresh: () => context.read<ProductsProvider>().loadProducts(),
+                  child: GridView.builder(
+                    padding: const EdgeInsets.all(16),
+                    gridDelegate: const SliverGridDelegateWithMaxCrossAxisExtent(
+                      maxCrossAxisExtent: 220,
+                      mainAxisSpacing: 16,
+                      crossAxisSpacing: 16,
+                      childAspectRatio: 0.62,
+                    ),
+                    itemCount: products.length,
+                    itemBuilder: (context, index) {
+                      final product = products[index];
+                      return _ProductCard(product: product);
+                    },
+                  ),
+                ),
     );
   }
 }
-
-// ---------------------------------------------------------------------------
-// Product Card — now with wishlist + cart icons
-// ---------------------------------------------------------------------------
 
 class _ProductCard extends StatelessWidget {
   final Product product;
@@ -105,11 +101,9 @@ class _ProductCard extends StatelessWidget {
         child: Column(
           crossAxisAlignment: CrossAxisAlignment.start,
           children: [
-            // ── Image + wishlist overlay ────────────────────────────
             Expanded(
               child: Stack(
                 children: [
-                  // Image placeholder (or Image.network when you have imageUrl)
                   Container(
                     width: double.infinity,
                     color: theme.colorScheme.surfaceContainerHighest,
@@ -119,8 +113,6 @@ class _ProductCard extends StatelessWidget {
                       color: theme.colorScheme.onSurfaceVariant,
                     ),
                   ),
-
-                  // Wishlist toggle — top right
                   Positioned(
                     top: 6,
                     right: 6,
@@ -129,11 +121,8 @@ class _ProductCard extends StatelessWidget {
                       shape: const CircleBorder(),
                       child: IconButton(
                         visualDensity: VisualDensity.compact,
-                        tooltip: isSaved
-                            ? 'Remove from wishlist'
-                            : 'Add to wishlist',
-                        onPressed: () =>
-                            context.read<WishlistProvider>().toggle(product.id),
+                        tooltip: isSaved ? 'Remove from wishlist' : 'Add to wishlist',
+                        onPressed: () => context.read<WishlistProvider>().toggle(product.id),
                         icon: AnimatedSwitcher(
                           duration: const Duration(milliseconds: 200),
                           transitionBuilder: (child, anim) => ScaleTransition(
@@ -153,8 +142,6 @@ class _ProductCard extends StatelessWidget {
                 ],
               ),
             ),
-
-            // ── Details + cart button ───────────────────────────────
             Padding(
               padding: const EdgeInsets.fromLTRB(12, 10, 8, 10),
               child: Column(
@@ -170,8 +157,6 @@ class _ProductCard extends StatelessWidget {
                     ),
                   ),
                   const SizedBox(height: 4),
-
-                  // Rating
                   Row(
                     children: [
                       Icon(
@@ -189,8 +174,6 @@ class _ProductCard extends StatelessWidget {
                     ],
                   ),
                   const SizedBox(height: 8),
-
-                  // Price + add-to-cart icon
                   Row(
                     children: [
                       Expanded(
@@ -224,10 +207,6 @@ class _ProductCard extends StatelessWidget {
     );
   }
 }
-
-// ---------------------------------------------------------------------------
-// Empty state (unchanged)
-// ---------------------------------------------------------------------------
 
 class _EmptyState extends StatelessWidget {
   final ThemeData theme;

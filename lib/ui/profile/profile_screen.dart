@@ -4,6 +4,7 @@ import 'package:provider/provider.dart';
 import '../../state/auth_provider.dart';
 import '../../state/cart_provider.dart';
 import '../../state/wishlist_provider.dart';
+import '../shell/main_shell.dart';
 
 class ProfileScreen extends StatelessWidget {
   const ProfileScreen({super.key});
@@ -28,7 +29,7 @@ class ProfileScreen extends StatelessWidget {
             icon: const Icon(Icons.settings_outlined),
             tooltip: 'Settings',
             onPressed: () {
-              // TODO: navigate to settings
+              // no-op for now
             },
           ),
         ],
@@ -38,15 +39,12 @@ class ProfileScreen extends StatelessWidget {
         child: Column(
           crossAxisAlignment: CrossAxisAlignment.stretch,
           children: [
-            // ── Header card ──────────────────────────────────────────
             _ProfileHeader(
               initials: initials,
               name: displayName,
               email: email,
             ),
             const SizedBox(height: 20),
-
-            // ── Cart + Wishlist shortcut cards ───────────────────────
             Row(
               children: [
                 Expanded(
@@ -55,11 +53,7 @@ class ProfileScreen extends StatelessWidget {
                     label: 'Cart',
                     count: cart.itemCount,
                     color: theme.colorScheme.primary,
-                    onTap: () {
-                      // TODO: switch to cart tab.
-                      // In MainShell, expose a controller or use
-                      // a ValueNotifier<int> tab index. For now this is a no-op.
-                    },
+                    onTap: () => mainShellKey.currentState?.selectTab(2),
                   ),
                 ),
                 const SizedBox(width: 12),
@@ -69,16 +63,12 @@ class ProfileScreen extends StatelessWidget {
                     label: 'Wishlist',
                     count: wishlist.count,
                     color: Colors.red.shade400,
-                    onTap: () {
-                      // TODO: switch to wishlist tab.
-                    },
+                    onTap: () => mainShellKey.currentState?.selectTab(3),
                   ),
                 ),
               ],
             ),
             const SizedBox(height: 24),
-
-            // ── Account information ──────────────────────────────────
             Text(
               'Account',
               style: theme.textTheme.titleMedium?.copyWith(
@@ -103,25 +93,17 @@ class ProfileScreen extends StatelessWidget {
                     icon: Icons.phone_outlined,
                     label: 'Phone',
                     value: '+1 234 567 890',
-                    onTap: () {
-                      // TODO: edit phone
-                    },
                   ),
                   const Divider(height: 1, indent: 56),
                   _InfoTile(
                     icon: Icons.location_on_outlined,
                     label: 'Address',
                     value: 'New York, USA',
-                    onTap: () {
-                      // TODO: edit address
-                    },
                   ),
                 ],
               ),
             ),
             const SizedBox(height: 24),
-
-            // ── Menu items ───────────────────────────────────────────
             Text(
               'More',
               style: theme.textTheme.titleMedium?.copyWith(
@@ -139,56 +121,41 @@ class ProfileScreen extends StatelessWidget {
                   _MenuTile(
                     icon: Icons.receipt_long_outlined,
                     label: 'My orders',
-                    onTap: () {
-                      // TODO: navigate to orders
-                    },
+                    onTap: () {},
                   ),
                   const Divider(height: 1, indent: 56),
                   _MenuTile(
                     icon: Icons.shopping_cart_outlined,
                     label: 'My cart',
                     trailing: _CountPill(count: cart.itemCount),
-                    onTap: () {
-                      // TODO: switch to cart tab
-                    },
+                    onTap: () => mainShellKey.currentState?.selectTab(2),
                   ),
                   const Divider(height: 1, indent: 56),
                   _MenuTile(
                     icon: Icons.favorite_border,
                     label: 'Wishlist',
                     trailing: _CountPill(count: wishlist.count),
-                    onTap: () {
-                      // TODO: switch to wishlist tab
-                    },
+                    onTap: () => mainShellKey.currentState?.selectTab(3),
                   ),
                   const Divider(height: 1, indent: 56),
                   _MenuTile(
                     icon: Icons.help_outline,
                     label: 'Help & support',
-                    onTap: () {
-                      // TODO: navigate to help
-                    },
+                    onTap: () {},
                   ),
                   const Divider(height: 1, indent: 56),
                   _MenuTile(
                     icon: Icons.info_outline,
                     label: 'About',
-                    onTap: () {
-                      // TODO: navigate to about
-                    },
+                    onTap: () {},
                   ),
                 ],
               ),
             ),
             const SizedBox(height: 24),
-
-            // ── Logout ───────────────────────────────────────────────
             OutlinedButton.icon(
               onPressed: () => _confirmLogout(context),
-              icon: Icon(
-                Icons.logout,
-                color: theme.colorScheme.error,
-              ),
+              icon: Icon(Icons.logout, color: theme.colorScheme.error),
               label: Text(
                 'Logout',
                 style: TextStyle(
@@ -206,7 +173,6 @@ class ProfileScreen extends StatelessWidget {
               ),
             ),
             const SizedBox(height: 16),
-
             Center(
               child: Text(
                 'Version 1.0.0',
@@ -225,8 +191,7 @@ class ProfileScreen extends StatelessWidget {
     final parts = name.trim().split(RegExp(r'\s+'));
     if (parts.isEmpty) return '?';
     if (parts.length == 1) return parts.first.substring(0, 1).toUpperCase();
-    return (parts.first.substring(0, 1) + parts.last.substring(0, 1))
-        .toUpperCase();
+    return (parts.first.substring(0, 1) + parts.last.substring(0, 1)).toUpperCase();
   }
 
   Future<void> _confirmLogout(BuildContext context) async {
@@ -252,10 +217,6 @@ class ProfileScreen extends StatelessWidget {
     }
   }
 }
-
-// ---------------------------------------------------------------------------
-// Header card (unchanged from your version)
-// ---------------------------------------------------------------------------
 
 class _ProfileHeader extends StatelessWidget {
   final String initials;
@@ -312,21 +273,10 @@ class _ProfileHeader extends StatelessWidget {
                     maxLines: 1,
                     overflow: TextOverflow.ellipsis,
                     style: theme.textTheme.bodyMedium?.copyWith(
-                      color: theme.colorScheme.onPrimaryContainer
-                          .withValues(alpha: 0.8),
+                      color: theme.colorScheme.onPrimaryContainer.withValues(alpha: 0.8),
                     ),
                   ),
                 ],
-              ),
-            ),
-            IconButton(
-              tooltip: 'Edit profile',
-              onPressed: () {
-                // TODO: navigate to edit profile
-              },
-              icon: Icon(
-                Icons.edit_outlined,
-                color: theme.colorScheme.onPrimaryContainer,
               ),
             ),
           ],
@@ -335,10 +285,6 @@ class _ProfileHeader extends StatelessWidget {
     );
   }
 }
-
-// ---------------------------------------------------------------------------
-// NEW — Stat card with icon + live count (Cart / Wishlist shortcut)
-// ---------------------------------------------------------------------------
 
 class _StatCard extends StatelessWidget {
   final IconData icon;
@@ -412,10 +358,6 @@ class _StatCard extends StatelessWidget {
   }
 }
 
-// ---------------------------------------------------------------------------
-// NEW — Small count pill for menu rows
-// ---------------------------------------------------------------------------
-
 class _CountPill extends StatelessWidget {
   final int count;
 
@@ -442,28 +384,21 @@ class _CountPill extends StatelessWidget {
   }
 }
 
-// ---------------------------------------------------------------------------
-// Info tile (unchanged)
-// ---------------------------------------------------------------------------
-
 class _InfoTile extends StatelessWidget {
   final IconData icon;
   final String label;
   final String value;
-  final VoidCallback? onTap;
 
   const _InfoTile({
     required this.icon,
     required this.label,
     required this.value,
-    this.onTap,
   });
 
   @override
   Widget build(BuildContext context) {
     final theme = Theme.of(context);
     return ListTile(
-      onTap: onTap,
       leading: Icon(icon, color: theme.colorScheme.primary),
       title: Text(
         label,
@@ -477,19 +412,9 @@ class _InfoTile extends StatelessWidget {
           fontWeight: FontWeight.w500,
         ),
       ),
-      trailing: onTap != null
-          ? Icon(
-        Icons.chevron_right,
-        color: theme.colorScheme.onSurfaceVariant,
-      )
-          : null,
     );
   }
 }
-
-// ---------------------------------------------------------------------------
-// Menu tile — now supports optional trailing widget
-// ---------------------------------------------------------------------------
 
 class _MenuTile extends StatelessWidget {
   final IconData icon;
